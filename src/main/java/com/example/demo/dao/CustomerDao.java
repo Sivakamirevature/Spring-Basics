@@ -7,38 +7,49 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.example.demo.dto.UpdateBatchClass;
+import com.example.demo.exception.ExceptionHandling;
 import com.example.demo.model.Customer;
 import com.example.demo.util.CustomerUtil;
+import com.example.demo.util.MessageConstants;
+
+
 
 public class CustomerDao {
 	Connection con = CustomerUtil.getConnection();
 	 PreparedStatement pst = null;
-    Customer details = new Customer();
-
-     public List<Customer> viewCustomer() throws Exception{    
+	 
+	 private static final Logger LOGGER=LoggerFactory.getLogger(CustomerDao.class);
+    
+    @Autowired
+    MessageConstants MessageConstantsobj;
+   
+     public List<Customer> viewCustomer() throws ExceptionHandling{    
     	    Connection con =null;
     	    PreparedStatement pst = null;
     	    List<Customer> list = new ArrayList<Customer>();
     	    try {
     	        con = CustomerUtil.getConnection();
-    	        String sql = "select * from customer";
+    	        String sql = "select *  from customer";
     	        pst = con.prepareStatement(sql);
     	        ResultSet rs = pst.executeQuery();
     	        while(rs.next()) {
-    	            
     	        	Customer details = new Customer();
     	        	details.setId(rs.getInt("id"));
     	            details.setName(rs.getString("name"));
     	            details.setAge(rs.getInt("age"));
     	            list.add(details);
     	        }
-    	    } catch (SQLException e) {
-    	        e.printStackTrace();
-    	        throw new Exception("cannot  View customer",e);
+    	    } catch (SQLException e) { 
+    	    	throw new ExceptionHandling(MessageConstantsobj.SHOW_CANT_PERFORMED ,e);
     	    }
     	    return list;
     	}
-     public String insert(Customer c) {
+     public String insert(Customer c)throws ExceptionHandling {
     	 Connection con =null;
  	    PreparedStatement pst = null;
  	   try {
@@ -50,54 +61,96 @@ public class CustomerDao {
 	        pst.setInt(3, c.getAge());
 	        int i = pst.executeUpdate();
 	        if(i>0)
-	        	System.out.println("Inserted Successfully");
+	        	LOGGER.info("Inserted Successfully");
 	        else {
-				System.out.println("Inserted Failed");
+	        	LOGGER.info("Inserted Failed");
 			}
  	   }
  	   catch (SQLException e) {
-	        e.printStackTrace();	        
+	        e.printStackTrace();
+	        throw new ExceptionHandling(MessageConstantsobj.INSERTED_CANT_PERFORMED ,e);
 	    }
  	    return "inserted Successfull"; 
      }
      
-     public String daoDelete(int id) {
+     
+     public String daoDelete(int id) throws ExceptionHandling{
     	 Connection con =null;
   	    PreparedStatement pst = null;
   	   try {
  	        con = CustomerUtil.getConnection();
- 	        String sql = "delete from customer where id="+id;
+ 	        String sql = "delete from table customer where id="+id;
  	        pst = con.prepareStatement(sql);
  	        int i = pst.executeUpdate();
  	        if(i>0)
- 	        	System.out.println("Deleted Successfully");
+ 	        	LOGGER.info("Deleted Successfully");
  	        else {
- 				System.out.println("Deleted Failed");
+ 	        	LOGGER.info("Deleted Failed");
  			}
   	   }
   	   catch (SQLException e) {
- 	        e.printStackTrace();	        
+  		 e.printStackTrace();
+ 	       throw  new ExceptionHandling(MessageConstantsobj.DELETED_CANT_PERFORMED ,e);	        
  	    }
   	    return "Deleted Successfull";  
      }
-     public String daoUpdate(int id, String name) {
+     public String daoUpdate(int id, String name) throws ExceptionHandling{
     	 Connection con =null;
    	    PreparedStatement pst = null;
    	   try {
   	        con = CustomerUtil.getConnection();
-  	        String sql = "update customer set name=? where id="+id;
+  	        String sql = "update customer set name="+name+" where id="+id;
   	        pst = con.prepareStatement(sql);
-  	        pst.setString(1, name);
   	        int i = pst.executeUpdate();
   	        if(i>0)
-  	        	System.out.println("Updated Successfully");
+  	        	LOGGER.info("Updated Successfully");
   	        else {
-  				System.out.println("Updated Failed");
+  	        	LOGGER.info("Updated Failed");
   			}
    	   }
    	   catch (SQLException e) {
-  	        e.printStackTrace();	        
+   		throw  new ExceptionHandling(MessageConstantsobj.DELETED_CANT_PERFORMED ,e);   
   	    }
     	 return "updated SuccessfullY";
      }
+     
+     public String daoUpdateBatch(UpdateBatchClass updatebatchobj)throws ExceptionHandling{
+    	 Connection con =null;
+    	 PreparedStatement pst = null;
+    	   try {
+   	        con = CustomerUtil.getConnection();
+   	        String sql = "update customer set name=?, age=? where id=?";
+   	        pst = con.prepareStatement(sql);
+   	        pst.setString(1, updatebatchobj.getName());
+   	        pst.setInt(2, updatebatchobj.getAge());
+   	        pst.setInt(3, updatebatchobj.getId());
+   	        int i = pst.executeUpdate();
+   	        if(i>0)
+   	        	LOGGER.info("Updated Successfully");
+   	        else {
+   	        	LOGGER.info("Updated Failed");
+   			}
+    	   }
+    	   catch (SQLException e) {
+    		throw  new ExceptionHandling(MessageConstantsobj.DELETED_CANT_PERFORMED ,e);   
+   	    }
+    	 return "updated Successfull";
+     }
+	public String daoDeleteBatch(int a[])throws ExceptionHandling {
+		int length = a.length,i;
+		Connection con =null;
+   	 	PreparedStatement pst = null;
+		for(i=0;i<length;i++) {
+			 try {
+		   	        con = CustomerUtil.getConnection();
+		   	        String sql = "delete from customer where id="+a[i];
+		   	        pst = con.prepareStatement(sql);
+		   	        int k = pst.executeUpdate();	
+			 	}
+			 catch(SQLException e){
+				 throw  new ExceptionHandling(MessageConstantsobj.DELETED_CANT_PERFORMED ,e); 
+			 	}
+		}
+		return "Batch Deleted Successfull";
+	}
 }

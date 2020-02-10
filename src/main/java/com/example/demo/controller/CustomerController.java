@@ -1,11 +1,15 @@
 package com.example.demo.controller;
 import com.example.demo.service.CustomerService;
+import com.example.demo.dto.UpdateBatchClass;
+import com.example.demo.exception.ExceptionHandling;
 import com.example.demo.model.Customer;
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,25 +17,33 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class CustomerController
 {
-	CustomerService cs=new CustomerService();
+	CustomerService serviceObject=new CustomerService();
 	@GetMapping("view")
-	public List<Customer> view() throws Exception{
-  
-        return cs.CustomerView();
+	public List<Customer> view() throws ExceptionHandling{
+        return serviceObject.CustomerView();
 	}
 	@PostMapping("insert")
-	public void insert(@RequestBody Customer c) {
-		cs.insertCustomer(c);
+	public void insert(@RequestBody Customer c)throws ExceptionHandling {
+		serviceObject.insertCustomer(c);
 	}
-	@RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
-	public String delete(@PathVariable int id) {
-		 return cs.serviceDelete(id);
-		}
+	@RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
+	public String delete(@PathVariable int id) throws ExceptionHandling {
+		 return serviceObject.serviceDelete(id);
+	}
 	
-	@RequestMapping(value = "/update/{id}/{name}", method = RequestMethod.GET)
-	public String update(@PathVariable int id, @PathVariable String name) {
+	@PutMapping(value = "/update/{id}/{name}")
+	public String update(@PathVariable int id, @PathVariable String name) throws ExceptionHandling {
 		System.out.println("Name is" +name);
-		 return cs.serviceUpdate(id,name);
+		return serviceObject.serviceUpdate(id,name);
 		}
-	
+	@PostMapping(value="/UpdateBatch")
+	public String UpdateBatch(@RequestBody UpdateBatchClass c) throws ExceptionHandling {
+		return serviceObject.serviceUpdateBatch(c);
+	}
+	@DeleteMapping(value="/deleteBatch/{id1}/{id2}/{id3}")
+	public String deleteBatch(@PathVariable int id1, @PathVariable int id2, @PathVariable int id3) throws ExceptionHandling {
+		int a[] = {id1, id2, id3};
+		int length = a.length;
+		return serviceObject.deleteBatch(a);
+	}
 }
