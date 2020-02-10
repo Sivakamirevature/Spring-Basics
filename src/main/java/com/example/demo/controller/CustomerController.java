@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 import com.example.demo.service.CustomerService;
+import com.example.demo.dto.DeleteBatches;
 import com.example.demo.dto.UpdateBatchClass;
 import com.example.demo.exception.ExceptionHandling;
 import com.example.demo.model.Customer;
@@ -40,10 +41,9 @@ public class CustomerController
 	public String UpdateBatch(@RequestBody UpdateBatchClass c) throws ExceptionHandling {
 		return serviceObject.serviceUpdateBatch(c);
 	}
-	@DeleteMapping(value="/deleteBatch/{id1}/{id2}/{id3}")
-	public String deleteBatch(@PathVariable int id1, @PathVariable int id2, @PathVariable int id3) throws ExceptionHandling {
-		int a[] = {id1, id2, id3};
-		int length = a.length;
-		return serviceObject.deleteBatch(a);
+	@DeleteMapping(value="/deleteBatch")
+	public String deleteBatch(@RequestBody DeleteBatches deletebatches) throws ExceptionHandling {
+		
+		return serviceObject.deleteBatch(deletebatches);
 	}
 }

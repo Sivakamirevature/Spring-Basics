@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.example.demo.dto.DeleteBatches;
 import com.example.demo.dto.UpdateBatchClass;
 import com.example.demo.exception.ExceptionHandling;
 import com.example.demo.model.Customer;
@@ -136,21 +137,29 @@ public class CustomerDao {
    	    }
     	 return "updated Successfull";
      }
-	public String daoDeleteBatch(int a[])throws ExceptionHandling {
-		int length = a.length,i;
+	public String daoDeleteBatch(DeleteBatches deletebatches)throws ExceptionHandling {
+		deletebatches.delarray;
+		String deleteIdString = "";
 		Connection con =null;
-   	 	PreparedStatement pst = null;
-		for(i=0;i<length;i++) {
+		PreparedStatement pst = null;
+		deleteIdString += a[0];
+	 		
+   	 	for(i=1;i<delarray.length;i++) {
+   	 		
+   	 		deleteIdString += ",";
+   	 	deleteIdString += delarray[i];
+   	 	}
+	
 			 try {
 		   	        con = CustomerUtil.getConnection();
-		   	        String sql = "delete from customer where id="+a[i];
+		   	        String sql = "DELETE FROM customer WHERE id IN("+deleteIdString+")";
 		   	        pst = con.prepareStatement(sql);
 		   	        int k = pst.executeUpdate();	
 			 	}
 			 catch(SQLException e){
 				 throw  new ExceptionHandling(MessageConstantsobj.DELETED_CANT_PERFORMED ,e); 
 			 	}
-		}
+		
 		return "Batch Deleted Successfull";
 	}
 }

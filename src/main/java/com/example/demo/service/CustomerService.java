@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.example.demo.dao.CustomerDao;
+import com.example.demo.dto.DeleteBatches;
 import com.example.demo.dto.UpdateBatchClass;
 import com.example.demo.exception.ExceptionHandling;
 import com.example.demo.model.Customer;
@@ -40,8 +41,8 @@ public class CustomerService {
 		return customerdao.daoUpdateBatch(update_batch_obj);
 		
 	}
-	public String deleteBatch(int a[]) throws ExceptionHandling {
-		return customerdao.daoDeleteBatch(a);
+	public String deleteBatch(DeleteBatches deletebatches) throws ExceptionHandling {
+		return customerdao.daoDeleteBatch(deletebatches);
 	
 	}
 }
